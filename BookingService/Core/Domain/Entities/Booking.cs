@@ -12,5 +12,18 @@ namespace Domain.Entities
 
         public BookingStatus CurrentStatus
         { get { return this.Status; } }
+
+        public void ChangeState(BookingAction bookingAction)
+        {
+            this.Status = (this.Status, bookingAction) switch
+            {
+                (BookingStatus.Created, BookingAction.Pay) => BookingStatus.Paid,
+                (BookingStatus.Created, BookingAction.Cancel) => BookingStatus.Canceled,
+                (BookingStatus.Paid, BookingAction.Finish) => BookingStatus.Finished,
+                (BookingStatus.Paid, BookingAction.Refound) => BookingStatus.Refounded,
+                (BookingStatus.Canceled, BookingAction.Reopen) => BookingStatus.Created,
+                _ => this.Status
+            };
+        }
     }
 }
